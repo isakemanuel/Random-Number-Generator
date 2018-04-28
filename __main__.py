@@ -9,8 +9,10 @@ import pandas
 
 ValueTuple = namedtuple("value_tuple", "value value_shifted")
 
+pandas.set_option('display.max_rows', None)
+
 #Set up logging
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
 
@@ -35,22 +37,6 @@ class RandomNumberGenerator(object):
 
     @lru_cache(maxsize=None)
     def x_n(self, n):
-        """
-            Slumptalsgenerator
-
-            Denna funktion är kärnan i slumptalsgeneratorn.
-
-            Parameters
-            ----------
-            n : int
-                Anger vilket index i serien som ska beräknas
-
-            Returns
-            -------
-            int
-                Värdet som returneras är ett det n:te talet i serien
-
-            """
         if n == 0:
             return ValueTuple(self.seed, self.seed >> self.steps_to_shift)
         else:
@@ -64,18 +50,23 @@ class RandomNumberGenerator(object):
         sns.lmplot('n', 'xn', data=self.series, fit_reg=False, scatter_kws={"s": 5})
         plt.xlabel(r'Index $n$')
         plt.ylabel(r'Värde $x_n$')
-        plt.title(r'Talserien $x_n = a \cdot x_{n-1} + c$ (mod m)')
+        plt.title(r'Talserien $x_n = {} \cdot x_{{n-1}} + {}$ (mod {})'.format(self.a, self.c, self.m))
         plt.show()
 
     def graph_counts(self):
         sns.set()
-        sns.lmplot('xn', 'count', data=self.counts, fit_reg=False, scatter_kws={"s": 1})
+        fig = sns.lmplot('xn', 'count', data=self.counts, fit_reg=False, scatter_kws={"s": 5})
+        axes = fig.axes
+        max_count = self.counts['count'].max()
+        logger.debug("Max count is {}".format(max_count))
+        axes[0, 0].set_ylim(0, max_count * 2)
         plt.show()
 
     def __calculate_counts__(self):
         value_counts = self.series['xn'].value_counts()
         dataframe = pandas.DataFrame(data=value_counts.reset_index(), index=np.arange(0, self.max_value + 1))
         dataframe.columns = ['xn', 'count']
+        dataframe = dataframe.sort_values(by='xn').reset_index(drop=True)
         logger.info("\n{}".format(dataframe))
         return dataframe
 
@@ -119,7 +110,7 @@ def main():
         print("{}; ".format(value_shifted), end="")
     print("")
     print("Perioden är: {}".format(rng.period))
-    #rng.graph_counts()
+    rng.graph_counts()
     rng.graph_series()
     # rng.__calculate_counts__()
 
