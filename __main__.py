@@ -7,12 +7,12 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import pandas
 
-ValueTuple = namedtuple("value_tuple", "value value_shifted")
+ValueTuple = namedtuple("ValueTuple", "value value_shifted")
 
 pandas.set_option('display.max_rows', None)
 
 #Set up logging
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
@@ -49,8 +49,8 @@ class RandomNumberGenerator(object):
         sns.set()
         sns.lmplot('n', 'xn', data=self.series, fit_reg=False, scatter_kws={"s": 5})
         plt.xlabel(r'Index $n$')
-        plt.ylabel(r'Värde $x_n$')
-        plt.title(r'Talserien $x_n = {} \cdot x_{{n-1}} + {}$ (mod {})'.format(self.a, self.c, self.m))
+        plt.ylabel(r'Value $x_n$')
+        plt.title(r'Number series $x_n = {} \cdot x_{{n-1}} + {}$ (mod {})'.format(self.a, self.c, self.m))
         plt.show()
 
     def graph_counts(self):
@@ -109,10 +109,9 @@ def main():
         value, value_shifted = rng.x_n(i)
         print("{}; ".format(value_shifted), end="")
     print("")
-    print("Perioden är: {}".format(rng.period))
+    print("Period: {}".format(rng.period))
     rng.graph_counts()
     rng.graph_series()
-    # rng.__calculate_counts__()
 
 
 if __name__ == '__main__':
