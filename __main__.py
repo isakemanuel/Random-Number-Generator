@@ -41,9 +41,9 @@ class RandomNumberGenerator(object):
             return ValueTuple(self.seed, self.seed >> self.steps_to_shift)
         else:
             previous, previous_shifted = self.x_n(n=(n - 1))
-            next = ((self.a * previous) + self.c) % self.m
-            next_shifted = next >> self.steps_to_shift
-            return ValueTuple(next, next_shifted)
+            number = ((self.a * previous) + self.c) % self.m
+            number_shifted = number >> self.steps_to_shift
+            return ValueTuple(number, number_shifted)
 
     def graph_series(self):
         sns.set()
